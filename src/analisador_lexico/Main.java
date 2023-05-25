@@ -13,20 +13,22 @@ import java.util.ArrayList;
 
 /**
  *
- * @author jackson junior 
+ * @author jackson  
  */
 public class Main {
 
     /**
      * @param args the command line arguments
+     * @throws java.io.IOException
      */
-    public static void main(String[] args) throws IOException {
+    
+    public static void main(String[] args) throws IOException  {
         // TODO code application logic here
 
         Analex2 analex = new Analex2();
         ArrayList<Token> tokens = analex.analisador();
         analex.analise(tokens);
-
+   
     }
 
 }

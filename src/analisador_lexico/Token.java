@@ -6,7 +6,7 @@ package analisador_lexico;
 
 /**
  *
- * @author hp
+ * @author jackson
  */
 public class Token {
     
