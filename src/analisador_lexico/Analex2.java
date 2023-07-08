@@ -94,7 +94,8 @@ public class Analex2 {
         String join = "";
         String joinPalavras = "";
         boolean retorna = false;
-
+        boolean comentario = false;
+        int auxLinha = 0;
         while (letras != null) {
 
             for (int i = 0; i < letras.length() ; i++) {
@@ -107,7 +108,7 @@ public class Analex2 {
                         if ((letraC >= 'a' && letraC <= 'z') || (letraC >= 'A' && letraC <= 'Z') || (letraC == '_')) {
                             
                             joinPalavras = joinPalavras + letraC;
-                           
+                            
                             estado = 1;
 
                         } else if (letraC == '0' || letraC == '1' || letraC == '2' || letraC == '3' || letraC == '4' || letraC == '5'
@@ -158,10 +159,11 @@ public class Analex2 {
 
                         } else if (letraC == '!') {
 
-                            auxToken = new Token(String.valueOf(letraC), "TOK_N", linha);
-                            token.add(auxToken);
+                            palavras.add(letraC);
+                            estado = 40;
 
-                        } else if (letraC == '^') {
+                        }
+                        else if (letraC == '^') {
                             auxToken = new Token(String.valueOf(letraC), "TOK_P", linha);
                             token.add(auxToken);
 
@@ -208,6 +210,9 @@ public class Analex2 {
                         } else if (letraC == '[') {
                             auxToken = new Token(String.valueOf(letraC), "TOK_APR", linha);
                             token.add(auxToken);
+                        } else if (letraC == ',') {
+                            auxToken = new Token(String.valueOf(letraC), "TOK_VG", linha);
+                            token.add(auxToken);
                         }
 
                         break;
@@ -225,7 +230,7 @@ public class Analex2 {
 
                             if (palavraReservada(join)) {
                                 String nomePal = tipoDePalavras(join);
-                                auxToken = new Token(join, nomePal, linha);
+                                auxToken = new Token(join,nomePal, linha);
                                 token.add(auxToken);
 
                             } else if (!(palavraReservada(join)) &&  !(biblioteca(join)) ) {
@@ -240,7 +245,7 @@ public class Analex2 {
                             join = "";
                             retorna = true;
                             joinPalavras = "";
-                             i--;
+                            i--;
                             palavras.clear();
                             estado = 0;
                         }
@@ -298,41 +303,18 @@ public class Analex2 {
 
                         } else if (letraC == '*') {
                             
-                            auxToken = new Token( "/*", "   TOK_ComentarioI ", linha);
+                            auxToken = new Token("/*", "   TOK_ComentarioI ", linha);
                             token.add(auxToken);
-                            
-                            boolean valida = false;
-                            int aux = letras.length();
-                            while (!valida) {
-
-                                if (i < aux) {
-
-                                    if (letras.charAt(i) == '*') {
-                                        i++;
-                                        if (letras.charAt(i) == '/') {
-                                            valida = true;
-                                        }
-                                    }
-                                } else {
-
-                                    letras = br.readLine();
-                                    
-                                    if (letras.trim().isEmpty() || letras == null ) {
-                                        letras = br.readLine();
-                                    } else {
-                                        aux = letras.length();
-                                        linha++;
-                                        i = 0;
-
-                                    }
-
-                                }
+                            comentario = true;
+                            palavras.clear();
+                            while (i < letras.length() && letraC != '*') {  
+                               //palavras.add(letraC);
                                 i++;
                             }
-
-                            if (valida) {
-                                auxToken = new Token("*/", "   TOK_ComentarioF   ", linha);
-                                token.add(auxToken);
+                            palavras.clear();
+                            if (i < letras.length() && letraC == '*') {
+                              
+                                estado = 10;
                             }
 
                         } else if (letraC == '=') {
@@ -341,14 +323,14 @@ public class Analex2 {
                             }
                             auxToken = new Token(join, " TOK_Div_igual ", linha);
                             token.add(auxToken);
-                        } else {
+                        } else if(!comentario) {
 
                             for (int j = 0; j < palavras.size(); j++) {
                                 join += palavras.get(j);
                             }
                             auxToken = new Token(join, "TOK_Div", linha);
                             token.add(auxToken);
-                            retorna = true;
+                       
                         }
                         join = "";
                         i--;
@@ -361,6 +343,18 @@ public class Analex2 {
                         break;
                         
                     case 10:
+                        if (i < letras.length() && letraC != '/') {
+                            palavras.add(letraC);
+                            estado = 8;
+
+                        } else if (i < letras.length() && letraC == '/') {
+                            auxToken = new Token("*/", "   TOK_ComentarioF   ", linha);
+                            token.add(auxToken);
+                        }
+                        break;
+
+                    case 13:
+                        
                         break;
                         
                     case 15:
@@ -402,7 +396,7 @@ public class Analex2 {
                             }
                             auxToken = new Token(join, " TOK_menos_EQUAL ", linha);
                             token.add(auxToken);
-                        } else if (letraC == '+') {
+                        } else if (letraC == '-') {
                             palavras.add(letraC);
                             for (int j = 0; j < palavras.size(); j++) {
                                 join += palavras.get(j);
@@ -413,13 +407,14 @@ public class Analex2 {
                         } else if (letraC == '>') {
                             auxToken = new Token(join, " TOK_atribuicao ", linha);
                             token.add(auxToken);
+                            
                         } else {
                             for (int j = 0; j < palavras.size(); j++) {
                                 join += palavras.get(j);
                             }
                             auxToken = new Token(join, "TOK_menos", linha);
                             token.add(auxToken);
-                            retorna = true;
+                        
                         }
                         join = "";
                           i--;
@@ -429,21 +424,30 @@ public class Analex2 {
                         break;
                     case 22:
                         if (letraC == '=') {
+                            
                             palavras.add(letraC);
                             for (int j = 0; j < palavras.size(); j++) {
                                 join += palavras.get(j);
                             }
                             auxToken = new Token(join, " TOK_multi_EQUAL ", linha);
                             token.add(auxToken);
+                    
                         } else if (letraC == '*') {
-                            palavras.add(letraC);
+
                             for (int j = 0; j < palavras.size(); j++) {
                                 join += palavras.get(j);
                             }
                             auxToken = new Token(join, " TOK_multip_multipli ", linha);
                             token.add(auxToken);
 
-                        } else {
+                        } else if (letraC == '/') {
+                            
+                            for (int j = 0; j < palavras.size(); j++) {
+                                join += palavras.get(j);
+                            }
+                            auxToken = new Token("*/", "   TOK_ComentarioF   ", linha);
+                            token.add(auxToken);
+                        } else if(!comentario) {
                             for (int j = 0; j < palavras.size(); j++) {
                                 join += palavras.get(j);
                             }
@@ -455,14 +459,16 @@ public class Analex2 {
                           i--;
                         palavras.clear();
                         estado = 0;
+                        comentario = false;
                         break;
+                        
                     case 23:
                         if (letraC == '=') {
                             palavras.add(letraC);
                             for (int j = 0; j < palavras.size(); j++) {
                                 join += palavras.get(j);
                             }
-                            auxToken = new Token(join, " TOK_eQUALS_EQUAL ", linha);
+                            auxToken = new Token(join, " TOK_EQUALS_EQUALS ", linha);
                             token.add(auxToken);
                         } else if (letraC == '!') {
                             palavras.add(letraC);
@@ -472,17 +478,15 @@ public class Analex2 {
                             auxToken = new Token(join, " TOK_DIFE ", linha);
                             token.add(auxToken);
 
-                        } else {
-                            for (int j = 0; j < palavras.size(); j++) {
-                                join += palavras.get(j);
-                            }
-                            auxToken = new Token(join, "TOK_equals", linha);
+                        } else if(letraC != '=' || letraC != '!'){
+                            i--;
+                            auxToken = new Token("=", "TOK_equals", linha);
                             token.add(auxToken);
                             retorna = true;
                         }
                         join = "";
-                          i--;
                         palavras.clear();
+                       // i--;
                         estado = 0;
                         break;
 
@@ -494,21 +498,21 @@ public class Analex2 {
                             }
                             auxToken = new Token(join, " TOK_&& ", linha);
                             token.add(auxToken);
-                        } else {
-
+                        } /*else {
                             for (int j = 0; j < palavras.size(); j++) {
                                 join += palavras.get(j);
                             }
                             auxToken = new Token(join, "TOK_&", linha);
                             token.add(auxToken);
                             retorna = true;
-                        }
+                        }*/
                         join = "";
-                          i--;
                         palavras.clear();
+                        i--;
                         estado = 0;
                         break;
                     case 30:
+                        
                         if (letraC == '|') {
                             palavras.add(letraC);
                             for (int j = 0; j < palavras.size(); j++) {
@@ -516,7 +520,7 @@ public class Analex2 {
                             }
                             auxToken = new Token(join, " TOK_OR ", linha);
                             token.add(auxToken);
-                        } else {
+                        } /*else {
 
                             for (int j = 0; j < palavras.size(); j++) {
                                 join += palavras.get(j);
@@ -524,10 +528,10 @@ public class Analex2 {
                             auxToken = new Token(join, "logico", linha);
                             token.add(auxToken);
                             retorna = true;
-                        }
+                        }*/
                         join = "";
-                          i--;
                         palavras.clear();
+                        i--;
                         estado = 0;
                         break;
 
@@ -551,17 +555,18 @@ public class Analex2 {
                         join = "";
 
                         palavras.clear();
+                         i--;
                         estado = 0;
                         break;
                     case 36:
-                        if (letraC == '>') {
+                        if (letraC == '=') {
 
                             palavras.add(letraC);
 
                             for (int j = 0; j < palavras.size(); j++) {
                                 join += palavras.get(j);
                             }
-                            auxToken = new Token(join, " TOK_maior_maior ", linha);
+                            auxToken = new Token(join, " TOK_maior_igual ", linha);
                             token.add(auxToken);
                         } else {
 
@@ -578,13 +583,13 @@ public class Analex2 {
                         estado = 0;
                         break;
                     case 37:
-                        if (letraC == '<') {
+                        if (letraC == '=') {
 
                             palavras.add(letraC);
                             for (int j = 0; j < palavras.size(); j++) {
                                 join += palavras.get(j);
                             }
-                            auxToken = new Token(join, " TOK_menor ", linha);
+                            auxToken = new Token(join, " TOK_menor_igual ", linha);
                             token.add(auxToken);
                         } else {
 
@@ -596,12 +601,36 @@ public class Analex2 {
                             retorna = true;
                         }
                         join = "";
-                          i--;
-                        estado = 0;
                         palavras.clear();
+                        i--;
+                        estado = 0;
+                
 
                         break;
+                     
+                    case 40:
+                        if (letraC == '=') {
+                            palavras.add(letraC);
+                            for (int j = 0; j < palavras.size(); j++) {
+                                join += palavras.get(j);
+                            }
+                            //auxToken = new Token(join, "TOK_DIF", linha);
+                           // token.add(auxToken);
+                        } else {
+                            
+                            for (int j = 0; j < palavras.size(); j++) {
+                                join += palavras.get(j);
+                            }
 
+                            auxToken = new Token(join, "TOK_N", linha);
+                            token.add(auxToken);
+                        }
+                        join = "";
+                             i--;
+                        palavras.clear();
+                   
+                        estado = 0;
+                        break;
                 }
 
             }

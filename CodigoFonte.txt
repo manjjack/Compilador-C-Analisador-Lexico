@@ -1,14 +1,23 @@
+#include<stdio.h>
+#include<stdio.h>
+
+int mai(int a, int b){
+
+int n = 9.9;
+float d = 12;
+char q = 23;
+int a = 12;
+int int = 5;
+
+x = ;
+if(ki < 12) {
+
+}
+
+for(){
+   while()
+}
 
 
-int main()
 
-double h;
-
-int a = "ed"; int [ ]
-
-
-int b 34
-
-34
-()
-)
+}

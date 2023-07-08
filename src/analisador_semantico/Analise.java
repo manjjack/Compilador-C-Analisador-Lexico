@@ -1,30 +1,32 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-package analisador_sintatico;
+package analisador_semantico;
 
 import analisador_lexico.Analex2;
 import analisador_lexico.Token;
+import analisador_sintatico.Gramatica;
+import analisador_sintatico.Sintatico;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 /**
  *
- * @author jackson
+ * @author user
  */
-public class Analisador {
-
-	Analex2 analisadorLexico = new Analex2();
+public class Analise {
+    
+    	Analex2 analisadorLexico = new Analex2();
 	ArrayList<Token> tokens = new ArrayList<>();
 	Token token = new Token();
-	ArrayList<Sintatico> sintaticos = new ArrayList<>();
+	ArrayList<Semantico> semanticos = new ArrayList<>();
 	Gramatica gramatica;
 
-	public static void analise(ArrayList<Sintatico> sintatico) {
+	public static void analise(ArrayList<Semantico> semantico) {
 		// System.out.println("LEXEMA\t\t\t\tLinha\t\t\t\tTOKEN\n");
-		for (Sintatico sint : sintatico) {
+		for (Semantico sint : semantico) {
 			System.out.println(sint.getEr() + "|\t" + "Linha: " + sint.getLinha() + "|\t" + sint.getErro());
 			System.out.println("____________________________________________________________________________________");
 		}
@@ -36,14 +38,7 @@ public class Analisador {
 		Gramatica gramatica = new Gramatica(tokens);
 		gramatica.analise();
 
-		return gramatica.errosSintaticos();
+		return gramatica.errosSematicos();
 
 	}
-
-	public ArrayList analisador2() throws IOException {
-        NovaGramatica grama = new NovaGramatica();
-        analise(grama.errosSintaticos());
-		return grama.errosSintaticos();
-	}
-
 }

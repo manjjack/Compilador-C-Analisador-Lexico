@@ -1,0 +1,118 @@
+  public void decalaraco(ArrayList<Token> token) {
+
+    }
+
+    public void tipo(ArrayList<Token> token, ArrayList<Sintatico> sintaticos) {
+        int i = 0;
+        while (i < token.size()) {
+
+            if (verificaTipoDado(token.get(i).getToken() )) {
+                id(token, sintaticos);
+            }
+            i++;
+        }
+
+    }
+
+    public void id(ArrayList<Token> token, ArrayList<Sintatico> sintaticos) {
+        
+        int aux = 0;
+      
+        while (aux < token.size()) {
+
+            if (token.get(aux).getToken().equals("TOK_ID")) {
+                
+                int i = aux - 1;
+                if (verificaTipoDado(token.get(i).getToken()) ) {
+                     aux++;
+                     varFinal(token, aux ,sintaticos);
+                } else {
+                    sintatico = new Sintatico(token.get(i).getLinha(), " Esperava um tipo de dado");
+                    sintaticos.add(sintatico);
+                }
+            }
+            aux++;
+        }
+
+    }
+
+    public void varFinal(ArrayList<Token> token, int i, ArrayList<Sintatico> sintaticos) {
+        
+        boolean valida = false;
+
+        if (token.get(i).getToken().equals("TOK_APR") || token.get(i).getToken().equals("TOK_Inteiro")
+                || token.get(i).getToken().equals("TOK_FPR") || token.get(i).getToken().equals("TOK_FPR")
+                && !(token.get(i).getToken().equals("TOK_PNV"))) {
+
+            if (token.get(i).getToken().equals("TOK_APR")) {
+                i++;
+            } else {
+              
+                sintatico = new Sintatico(token.get(i).getLinha(), " Esperava um [");
+                sintaticos.add(sintatico);
+            }
+
+            if (token.get(i).getToken().equals("TOK_Inteiro")) {
+                i++;
+
+            } else {
+               
+                sintatico = new Sintatico(token.get(i).getLinha(), " Esperava um inteiro entre [ ]");
+                sintaticos.add(sintatico);
+
+            }
+
+            if (token.get(i).getToken().equals("TOK_FPR")) {
+                i++;
+
+            } else {
+              
+                sintatico = new Sintatico(token.get(i).getLinha(), " Esperava um inteiro entre  ]");
+                sintaticos.add(sintatico);
+
+            }
+
+        }else if( token.get(i).getToken().equals("TOK_PNV") ){
+            
+        }else if( token.get(i).getToken().equals("TOK_equals")){
+            
+            
+        }
+        else{
+             
+            sintatico = new Sintatico(token.get(i).getLinha(), " Esperava um ; ou uma declaracao");
+            sintaticos.add(sintatico);
+        }
+
+    }
+
+    public int functionParm( ArrayList<Token> token,int i, ArrayList<Sintatico> sintaticos){
+           i++;
+          boolean valida = false;
+          
+        if (token.get(i).getToken().equals("TOK_AP")) {
+            valida = true;
+            i++;
+           
+        } else {
+
+            sintatico = new Sintatico(token.get(i).getLinha(), " Esperava um (");
+            sintaticos.add(sintatico);
+           
+        }
+
+        if (token.get(i).getToken().equals("TOK_FP")) {
+            valida = true;
+ 
+            i++;
+        } else {
+            valida = true;
+ 
+
+            sintatico = new Sintatico(token.get(i).getLinha(), " Esperava um )");
+            sintaticos.add(sintatico);
+        }
+
+    
+        return i;
+    }

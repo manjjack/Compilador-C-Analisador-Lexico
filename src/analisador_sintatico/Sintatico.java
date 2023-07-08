@@ -15,7 +15,7 @@ public class Sintatico {
     private String erro;
 
     public Sintatico(int linha, String erro) {
-        this.er = "Erro Sintático";
+        this.er = "Erro de Sintaxe";
         this.linha = linha;
         this.erro = erro;
 
@@ -33,7 +33,6 @@ public class Sintatico {
         return erro;
     }
 
-    public Sintatico() {
-    }
+    public Sintatico() {  }
 
 }

@@ -28,7 +28,7 @@ public class Main {
         Analex2 analex = new Analex2();
         ArrayList<Token> tokens = analex.analisador();
         analex.analise(tokens);
-   
+
     }
 
 }
