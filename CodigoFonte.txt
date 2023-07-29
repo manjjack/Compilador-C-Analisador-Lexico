@@ -1,6 +1,12 @@
 #include<stdio.h>
 #include<stdio.h>
 
+int soma(int ){
+
+int a;
+float yu = 'b';
+}
+
 int mai(int a, int b){
 
 int n = 9.9;
@@ -11,11 +17,13 @@ int int = 5;
 
 x = ;
 if(ki < 12) {
-
+      
 }
 
-for(){
-   while()
+for(i;i<8;i++){
+   while(){
+
+}
 }
 
 

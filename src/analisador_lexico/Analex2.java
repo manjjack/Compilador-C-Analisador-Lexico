@@ -87,7 +87,7 @@ public class Analex2 {
 
         BufferedReader br = new BufferedReader(new FileReader("CodigoFonte.txt"));
         String letras = br.readLine();
-
+        
         char letraC;
         int linha = 1;
         int estado = 0;
@@ -370,11 +370,11 @@ public class Analex2 {
                             for (int j = 0; j < palavras.size(); j++) {
                                 join += palavras.get(j);
                             }
-                            auxToken = new Token(join, " TOK_plus_plus ", linha);
+                            auxToken = new Token(join, "TOK_plus_plus", linha);
                             token.add(auxToken);
 
                         } else {
-
+                            i--;
                             for (int j = 0; j < palavras.size(); j++) {
                                 join += palavras.get(j);
                             }
@@ -383,7 +383,7 @@ public class Analex2 {
                             retorna = true;
                         }
                         join = "";
-                          i--;
+                          
                         palavras.clear();
                         estado = 0;
                         break;

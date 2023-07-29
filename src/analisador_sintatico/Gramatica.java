@@ -30,6 +30,8 @@ public class Gramatica {
     private ArrayList<String> auxTipoDado = new ArrayList<>();
     private ArrayList<String> auxB = new ArrayList<>();
     
+    int contMain = 0;
+    
      public Gramatica(ArrayList<Token> tokens) {
         this.tokens = tokens;
         this.indice = 0;
@@ -45,6 +47,16 @@ public class Gramatica {
     public boolean verificaTipoDado(String token) {
 
         return Arrays.asList("int", "void", "char", "double", "struct").contains(token);
+    }
+    
+    public int pos(String pl){
+        int po = 0;
+        for (int j = 0; j < this.auxTipo.size(); j++) {
+            if (pl.equals(this.auxTipo.get(j))) {
+               po = j; 
+            }
+        }
+        return po;
     }
 
     public boolean verificaBiblioteca(String token) {
@@ -71,6 +83,9 @@ public class Gramatica {
 
             token = tokens.get(indice);
 
+        }
+        if (token.getLexema().equals("main")) {
+            contMain++;
         }
 
     }
@@ -133,6 +148,7 @@ public class Gramatica {
     }
 
     private void declaracao() {
+        
         aux = "";
         aux = token.getToken();
         if (token.getToken().equals("int")) {
@@ -141,12 +157,15 @@ public class Gramatica {
             verificarToken("float", "float");
         } else if (token.getToken().equals("char")) {
             verificarToken("char", "char");
+        } else if (token.getToken().equals("void")) {
+            verificarToken("void", "void");
         } else {
             variavelDeclarada();
         }
 
         // verifica se tipo foi declarado como ID (Semantico)
-        if (token.getToken().equals("int") || token.getToken().equals("float") || token.getToken().equals("char")) {
+        if (token.getToken().equals("int") || token.getToken().equals("float") || token.getToken().equals("char")
+                || token.getToken().equals("void")) {
             erroS("ID invalido");
         }
         auxTipo.add(token.getLexema());
@@ -220,24 +239,25 @@ public class Gramatica {
                 declaracaoComposta();
                 break;
             case "TOK_equals":
+                
                 verificarToken("TOK_equals", "=");
                 if (token.getToken().equals("TOK_Inteiro")) {
                     if (!aux.equals("int") && token.getToken().equals("TOK_Inteiro")) {
-                        erroS("Esperava um inteiro");
+                        erroS("Esperava um inteiro"); //Semantico
                     }
                     verificarToken("TOK_Inteiro", "Inteiro");
 
                 } else if (token.getToken().equals("TOK_Float")) {
 
                     if (!aux.equals("float") && token.getToken().equals("TOK_Float")) {
-                        erroS("Esperava um Float");
+                        erroS("Esperava um Float"); //Semantico
                     }
                     verificarToken("TOK_Float", "Float");
 
                 } else if (token.getToken().equals("TOK_ID")) {
 
                     if (!aux.equals("char") && token.getToken().equals("TOK_ID")) {
-                        erroS("Esperava um char");
+                        erroS("Esperava um char"); //Semantico
                     }
                     verificarToken("TOK_ID", "char");
 
@@ -347,7 +367,8 @@ public class Gramatica {
     }
 
     private void expressaoA() {
-        
+            int auxPos = pos(token.getLexema()); 
+            String aux = auxTipo.get(auxPos);
             if (token.getToken().equals("TOK_ID")) {
                // Semantico
             if (!verificaV(token.getLexema())) {
@@ -368,6 +389,7 @@ public class Gramatica {
                     erroS("Erro na declaracao");
                     break;
             }
+            
             verificarToken("TOK_Inteiro", "Inteiro");
         } else if (token.getToken().equals("Tok_Inteiro")) {
             verificarToken("TOK_Inteiro", "Inteiro");
@@ -390,6 +412,71 @@ public class Gramatica {
             erroS("Erro na declaracao");
         }
     }
+    
+    private void expressaoB() {
+            int auxPos = pos(token.getLexema()); 
+            String aux = auxTipo.get(auxPos);
+            if (token.getToken().equals("TOK_ID")) {
+               // Semantico
+            if (!verificaV(token.getLexema())) {
+                erroS("Variavel '" + token.getLexema() + "' nao declarada");
+            }
+            verificaMain();
+            verificarToken("TOK_ID", "ID");
+            verificarToken("TOK_equals", "=");
+            verificarToken("TOK_PNV",";");
+            verificarToken("TOK_ID", "ID");
+            switch (token.getToken()) {
+                case "Tok_menor":
+                    verificarToken("Tok_menor", "<");
+                    break;
+                case "Tok_maior":
+                    verificarToken("Tok_maior", ">");
+                    break;
+                case "Tok_EQUALS_EQUALS":
+                    verificarToken("Tok_EQUALS_EQUALS", "==");
+                    break;
+                default:
+                        erroS("Erro na declaracao");
+                        break;
+                }
+
+                verificarToken("TOK_Inteiro", "Inteiro");
+                verificarToken("TOK_PNV", ";");
+                verificarToken("TOK_ID", "ID");
+                verificarToken("TOK_ID", "ID");
+                verificarToken("TOK_plus_plus", "++");
+
+            } else if (token.getLexema().equals("int")) {
+                verificarToken("int", "int");
+                verificarToken("TOK_ID", "ID");
+                verificarToken("TOK_equals", "=");
+                verificarToken("TOK_PNV", ";");
+                verificarToken("TOK_ID", "ID");
+                switch (token.getToken()) {
+                    case "Tok_menor":
+                        verificarToken("Tok_menor", "<");
+                        break;
+                    case "Tok_maior":
+                        verificarToken("Tok_maior", ">");
+                        break;
+                    case "Tok_EQUALS_EQUALS":
+                        verificarToken("Tok_EQUALS_EQUALS", "==");
+                        break;
+                    default:
+                        erroS("Erro na declaracao");
+                        break;
+                }
+
+                verificarToken("TOK_Inteiro", "Inteiro");
+                verificarToken("TOK_PNV", ";");
+                verificarToken("TOK_ID", "ID");
+                verificarToken("TOK_ID", "ID");
+                verificarToken("TOK_plus_plus", "++");
+        } else {
+            erroS("Erro na declaracao");
+        }
+    }
 
     // comandos for e while
     private void comandoIteracao() {
@@ -403,7 +490,7 @@ public class Gramatica {
         } else if (token.getToken().equals("for")) {
             verificarToken("for", "for");
             verificarToken("TOK_AP", "(");
-            //expressao();
+            /*expressao();
             if (token.getToken().equals("int")) {
                 verificarToken("int", "int");
                 verificarToken("TOK_ID", "ID");
@@ -412,11 +499,11 @@ public class Gramatica {
 
             } else {
                 erroS("Erro na Declaracao");
-            }
-            verificarToken("TOK_PNV", ";");
-            expressao();
-            verificarToken("TOK_PNV", ";");
-            expressao();
+            }*/
+            // verificarToken("TOK_PNV", ";");
+            expressaoB();
+            // verificarToken("TOK_PNV", ";");
+            //expressao();
             verificarToken("TOK_FP", ")");
             comando();
         }
@@ -439,7 +526,7 @@ public class Gramatica {
         //  verificarToken("TOK_ID", "ID");
 
         if (token.getToken().equals("TOK_EQUALS_EQUALS ")) {
-            while (token.getToken().equals("TOK_eQUALS_EQUAL ")) {
+            while (token.getToken().equals("TOK_eQUALS_EQUALS")) {
                 verificarToken("TOK_EQUALS_EQUALS ", "==");
             }
             expressaoAtribuicao();
@@ -624,16 +711,15 @@ public class Gramatica {
     
 
     private void verificaMain() {
-        boolean valida = false;
-        for (String tk : this.auxTipo) {
-            if (tk.equals("main")) {
-                valida = true;
-            }
+        if(contMain == 0){
+            erroS("Main nao declarado");
+        }else if(contMain == 1){
+            
+        }else if(contMain > 1){
+            erroS("Main declarado varias vezes");
         }
 
-        if (valida) {
-            erroS("Main nao declarado");
-        }
+       
     }
     
     // verifica Biblioteca
